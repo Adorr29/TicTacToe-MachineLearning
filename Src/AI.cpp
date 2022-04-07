@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "AI.hpp"
-#include "Board.hpp"
 
 #include <iostream> // tmp
 
@@ -11,7 +10,7 @@ void AI::clear()
     playHistory.clear();
 }
 
-Uint8 AI::play(const vector<Uint8> &boardStats)
+Uint8 AI::play(const vector<Uint8> &boardStats, Uint8 forcePlay)
 {
     auto search = memory.find(boardStats);
     vector<Uint8> memoryCell;
@@ -30,11 +29,21 @@ Uint8 AI::play(const vector<Uint8> &boardStats)
         memoryCell = search->second;
     }
 
-    vector<Uint8> playChoices;
-    for (Uint8 i = 0; i < memoryCell.size(); i++)
-        playChoices.insert(playChoices.end(), memoryCell[i], i);
+    if (forcePlay == emptyValue)
+    {
+        vector<Uint8> playChoices;
+        for (Uint8 i = 0; i < memoryCell.size(); i++)
+            playChoices.insert(playChoices.end(), memoryCell[i], i);
 
-    playIndex = playChoices[rand() % playChoices.size()];
+        if (playChoices.size() == 0)
+            return randomPlay(boardStats);
+
+        playIndex = playChoices[rand() % playChoices.size()];
+    }
+    else
+    {
+        playIndex = forcePlay;
+    }
 
     playHistory.push_back(make_pair<vector<Uint8>, Uint8>(vector<Uint8>(boardStats), Uint8(playIndex)));
 
@@ -72,12 +81,21 @@ void AI::learn(Uint8 reward, Uint8 punish)
     
     if (checkMemoryCellEmpty(memoryCell))
     {
-        memory.erase(playHistory.back().first);
+        //memory.erase(playHistory.back().first);
 
         playHistory.pop_back();
 
         learn(reward, punish);
     }
+}
+
+Uint8 AI::randomPlay(const vector<Uint8> &boardStats) const
+{
+    for (Uint8 i = 0; i < boardStats.size(); i++)
+        if (boardStats[i] == emptyValue)
+            return i;
+
+    throw exception(); // TODO create a true exception
 }
 
 bool AI::checkMemoryCellEmpty(const vector<Uint8> &memoryCell) const

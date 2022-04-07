@@ -1,3 +1,4 @@
+#include <SFML/Config.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream> // tmp
@@ -10,22 +11,31 @@
 using namespace std;
 using namespace sf;
 
-void step(Board &board, AI &ai1, AI &ai2, Uint8 &nextPlayer)
+bool checkEnd(Board &board, AI &ai1, AI &ai2)
 {
     Uint8 winner = board.getWinner();
+    bool equality = board.getEquality();
+
+    if (winner == emptyValue && equality == false)
+        return false;
+
     if (winner != emptyValue)
     {
         ai1.learn(winner == 0 ? 1 : 0, winner == 0 ? 0 : 1);
         ai2.learn(winner == 1 ? 1 : 0, winner == 1 ? 0 : 1);
     }
 
-    if (winner != emptyValue || board.getEquality() == true)
-    {
-        ai1.clear();
-        ai2.clear();
-        board.clear();
+    ai1.clear();
+    ai2.clear();
+    board.clear();
+    
+    return true;
+}
+
+void step(Board &board, AI &ai1, AI &ai2, Uint8 &nextPlayer, Uint8 forcePlay = emptyValue)
+{
+    if (checkEnd(board, ai1, ai2) == true)
         return;
-    }
 
     vector<Uint8> boardStats(boardSize.x * boardSize.y);
     for (Uint8 i = 0; i < boardSize.x; i++)
@@ -36,11 +46,11 @@ void step(Board &board, AI &ai1, AI &ai2, Uint8 &nextPlayer)
 
     if (nextPlayer == 0)
     {
-        index = ai1.play(boardStats);
+        index = ai1.play(boardStats, forcePlay);
     }
     else if (nextPlayer == 1)
     {
-        index = ai2.play(boardStats);
+        index = ai2.play(boardStats, forcePlay);
     }
     
     board.setValue(Vector2b(index / boardSize.x, index % boardSize.y), nextPlayer);
@@ -68,11 +78,19 @@ int main(int argc, char **argv)
                 window.close();
             else if (event.type == Event::MouseButtonPressed)
             {
-                step(board, ai1, ai2, nextPlayer);
+                Vector2b mouseGridPosition;
+                mouseGridPosition.x = event.mouseButton.x / (window.getSize().x / boardSize.x);
+                mouseGridPosition.y = event.mouseButton.y / (window.getSize().y / boardSize.y);
+
+                step(board, ai1, ai2, nextPlayer, mouseGridPosition.x * boardSize.x + mouseGridPosition.y);
             }
             else if (event.type == Event::KeyPressed)
             {
-                if (event.key.code == Keyboard::L)
+                if (event.key.code == Keyboard::W)
+                {
+                    step(board, ai1, ai2, nextPlayer);
+                }
+                else if (event.key.code == Keyboard::L)
                 {
                     learingMode = !learingMode;
 

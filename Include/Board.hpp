@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#pragma once
+
 using namespace std;
 using namespace sf;
 

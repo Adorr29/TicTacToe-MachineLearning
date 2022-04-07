@@ -107,13 +107,13 @@ void Board::draw(RenderTarget &target, RenderStates states) const
     for (Uint8 i = 0; i < size.x; i++)
         for (Uint8 j = 0; j < size.y; j++)
         {
-            cellSprite.setPosition(i * 200, j * 200);
+            cellSprite.setPosition(i * target.getSize().x / size.x, j * target.getSize().y / size.y);
             target.draw(cellSprite, states);
 
             if (tab[i][j] != emptyValue)
             {
                 sprite.setTexture(textures[tab[i][j]]);
-                sprite.setPosition(i * 200, j * 200);
+                sprite.setPosition(i * target.getSize().x / size.x, j * target.getSize().y / size.y);
                 target.draw(sprite, states);
             }
         }
