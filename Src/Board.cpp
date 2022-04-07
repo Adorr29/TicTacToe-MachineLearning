@@ -18,6 +18,16 @@ Board::~Board()
     delete [] tab;
 }
 
+const Vector2b &Board::getSize() const
+{
+    return size;
+}
+
+const Uint8 &Board::getCell(const Vector2b &position) const
+{
+    return tab[position.x][position.y];
+}
+
 void Board::clear()
 {
     for (Uint8 i = 0; i < size.x; i++)
@@ -70,6 +80,16 @@ Uint8 Board::getWinner() const
         }
 
     return emptyValue;
+}
+
+bool Board::getEquality() const
+{
+    for (Uint8 i = 0; i < size.x; i++)
+        for (Uint8 j = 0; j < size.y; j++)
+            if (tab[i][j] == emptyValue)
+                return false;
+
+    return true;
 }
 
 void Board::draw(RenderTarget &target, RenderStates states) const

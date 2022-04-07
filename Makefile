@@ -7,6 +7,7 @@ INCDIR		=	Include/
 
 SRC			=	$(SRCDIR)Main.cpp \
 				$(SRCDIR)Board.cpp \
+				$(SRCDIR)AI.cpp \
 				
 OBJ			=	$(SRC:.cpp=.o)
 

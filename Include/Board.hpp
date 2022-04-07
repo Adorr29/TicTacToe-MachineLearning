@@ -1,3 +1,4 @@
+#include <SFML/Config.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -14,9 +15,12 @@ class Board : public Drawable, public Transformable
 public:
     Board();
     ~Board();
+    const Vector2b &getSize() const;
+    const Uint8 &getCell(const Vector2b &position) const;
     void clear();
     void setValue(const Vector2b &position, Uint8 value);
     Uint8 getWinner() const;
+    bool getEquality() const;
     void draw(RenderTarget &target, RenderStates states) const;
 
 private:
